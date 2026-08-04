@@ -1,0 +1,28 @@
+# Build artifacts and compiled executables
+build/
+bin/
+out/
+minigit
+
+# Object files and libraries
+*.o
+*.a
+*.so
+*.dylib
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# IDEs and Language Server caches
+.clangd/
+.vscode/
+.idea/
+
+# System & temporary files
+*.swp
+*~
+.DS_Store
