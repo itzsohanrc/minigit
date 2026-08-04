@@ -2,7 +2,10 @@
 build/
 bin/
 out/
-minigit
+/minigit
+
+# Internal minigit local repo directory
+.minigit/
 
 # Object files and libraries
 *.o
