@@ -1,0 +1,42 @@
+name: Build and Publish Release Binary
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+#  Grant write permissions to create releases
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libssl-dev zlib1g-dev
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build minigit binary
+        run: cmake --build build --config Release
+
+      - name: Package binary archive
+        run: |
+          mkdir -p dist
+          cp build/minigit dist/
+          tar -czvf minigit-linux-x86_64.tar.gz -C dist minigit
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: minigit-linux-x86_64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
