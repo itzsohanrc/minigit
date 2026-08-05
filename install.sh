@@ -1,33 +1,39 @@
 #!/bin/bash
 set -e
 
-# Repository configuration
 REPO="itzsohanrc/minigit"
 BINARY_NAME="minigit"
 ARCHIVE_NAME="minigit-linux-x86_64.tar.gz"
 
 echo "🔍 Checking for the latest release of $BINARY_NAME..."
 
-# Method 1: Fetch latest release tag via GitHub URL redirect (bypasses API rate limits)
-LATEST_TAG=$(curl -sIL -o /dev/null -w "%{url_effective}" "https://github.com/$REPO/releases/latest" | awk -F'/' '{print $NF}')
+# 1. Try fetching tag from latest Release
+LATEST_TAG=$(curl -sH "User-Agent: Mozilla/5.0" "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-# Method 2: Fallback to GitHub API with User-Agent header if redirect fails
-if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "latest" ] || [ "$LATEST_TAG" = "releases" ]; then
-    LATEST_TAG=$(curl -sH "User-Agent: Mozilla/5.0" "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+# 2. Fallback: If no Release object exists, fetch top Git Tag directly
+if [ -z "$LATEST_TAG" ]; then
+    LATEST_TAG=$(curl -sH "User-Agent: Mozilla/5.0" "https://api.github.com/repos/$REPO/tags" | grep '"name":' | head -n 1 | sed -E 's/.*"([^"]+)".*/\1/')
 fi
 
-# Verify tag resolution
-if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "latest" ] || [ "$LATEST_TAG" = "releases" ]; then
-    echo "❌ Error: Failed to fetch latest release tag."
-    echo "Please ensure a published release exists at: https://github.com/$REPO/releases"
+# 3. Verify tag was found
+if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+    echo "❌ Error: Could not detect any releases or tags in $REPO."
+    echo "Please ensure at least one release or tag exists at: https://github.com/$REPO/releases"
     exit 1
 fi
 
-echo "📦 Found latest release: $LATEST_TAG"
+echo "📦 Found version: $LATEST_TAG"
 echo "⬇️ Downloading $ARCHIVE_NAME..."
 
-# Download binary archive from release assets
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$LATEST_TAG/$ARCHIVE_NAME"
+
+# Check if download asset exists
+if ! curl --output /dev/null --silent --head --fail "$DOWNLOAD_URL"; then
+    echo "❌ Error: Binary asset not found at $DOWNLOAD_URL"
+    echo "Check if the GitHub Action finished uploading $ARCHIVE_NAME to release $LATEST_TAG."
+    exit 1
+fi
+
 curl -sLO "$DOWNLOAD_URL"
 
 echo "📂 Extracting archive..."
@@ -35,7 +41,6 @@ tar -xzf "$ARCHIVE_NAME"
 
 echo "🚀 Installing $BINARY_NAME to /usr/local/bin..."
 
-# Check write permissions for /usr/local/bin
 if [ -w "/usr/local/bin" ]; then
     mv "$BINARY_NAME" /usr/local/bin/
 else
@@ -43,10 +48,7 @@ else
     sudo mv "$BINARY_NAME" /usr/local/bin/
 fi
 
-# Make binary executable
 sudo chmod +x "/usr/local/bin/$BINARY_NAME"
-
-# Clean up downloaded archive
 rm -f "$ARCHIVE_NAME"
 
 echo ""
