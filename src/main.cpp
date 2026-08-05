@@ -7,7 +7,18 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        cout << "Usage: minigit <command> [<args>]\n";
+        cout << "##########################################################################################\n";
+        cout << "Welcome to minigit\nDEVELOPED BY: Sohan Roy Chowdhury\nFollowing commands are available:\n";
+        cout << "  init : to initialize a new MiniGit repository\n";
+        cout << "  hash-object : to hash an object\n";
+        cout << "  cat-file : to display the content of an object\n";
+        cout << "  ls-files : to list all files in the index\n";
+        cout << "  add : to add files to the index\n";
+        cout << "  commit : to create a new commit\n";
+        cout << "  log : to display commit history\n";
+        cout << "Feel free to contact me at roychowdhurysohan2006@gmail.com\n";
+        cout<< "Happy coding and enjoy using minigit!\n";
+        cout << "##########################################################################################\n";
         return 1;
     }
 
