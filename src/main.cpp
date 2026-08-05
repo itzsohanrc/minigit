@@ -6,7 +6,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
+    if (argc < 2 || argv[1] == string("--help") || argv[1] == string("-h")) {
         cout << "##########################################################################################\n";
         cout << "Welcome to minigit\nDEVELOPED BY: Sohan Roy Chowdhury\nFollowing commands are available:\n";
         cout << "  init : to initialize a new MiniGit repository\n";
