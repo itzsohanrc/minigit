@@ -4,7 +4,23 @@ A lightweight Git-like version control system built with C++ and CMake. MiniGit 
 
 ---
 
-## 📋 Prerequisites
+## ⚡ Quick Installation (Recommended)
+
+Skip building from source! Install the pre-compiled binary directly using the one-line installer:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/itzsohanrc/minigit/main/install.sh | bash
+```
+
+After installation, verify it:
+
+```bash
+minigit --help
+```
+
+---
+
+## 📋 Prerequisites (For Building from Source)
 
 ### Ubuntu / Debian
 
@@ -52,41 +68,41 @@ The compiled executable will be available at:
 
 ## 🚀 Quick Start & Usage
 
-### 1. Initialize a New Repository
+If installed using the installer:
+
+```bash
+minigit init
+```
+
+If built from source:
 
 ```bash
 ./build/minigit init
 ```
 
-### 2. Create a Sample File
+### Example Workflow
 
 ```bash
-echo "Hello, mini Git!" > file.txt
+# Initialize a repository
+minigit init
+
+# Create a file
+echo "Hello, MiniGit!" > file.txt
+
+# Compute object hash (optional)
+minigit hash-object file.txt
+
+# Stage file
+minigit add file.txt
+
+# Commit changes
+minigit commit -m "Initial commit"
+
+# View history
+minigit log
 ```
 
-### 3. Compute the Object Hash (Optional)
-
-```bash
-./build/minigit hash-object file.txt
-```
-
-### 4. Stage the File
-
-```bash
-./build/minigit add file.txt
-```
-
-### 5. Commit the Changes
-
-```bash
-./build/minigit commit -m "Initial commit"
-```
-
-### 6. View Commit History
-
-```bash
-./build/minigit log
-```
+For source builds, replace `minigit` with `./build/minigit`.
 
 ---
 
@@ -95,7 +111,8 @@ echo "Hello, mini Git!" > file.txt
 ```text
 minigit/
 ├── CMakeLists.txt          # CMake configuration
-├── .gitignore              # Ignored build & internal files
+├── .gitignore              # Ignored build & generated files
+├── install.sh              # One-line installer script
 ├── include/
 │   └── minigit/
 │       ├── commands.hpp
